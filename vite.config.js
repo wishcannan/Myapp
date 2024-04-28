@@ -1,21 +1,24 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import * as path from 'path'
 
-// https://vitejs.dev/config/
+
 export default defineConfig({
   base: "./", //等同于  assetsPublicPath :'./'
-	resolve: {
-    alias: {
-    '@': path.resolve(__dirname, 'src'),
-    }
-  },
   plugins: [vue()],
   server:{
     host:'0.0.0.0',//指定服务器 应该监听哪个 IP 地址
     port: 9527, // 指定开发服务器端口
     strictPort: true, // 若端口已被占用则会直接退出
     open: false, // 启动时自动在浏览器中打开应用程序
+    proxy: {
+      '/api': {
+        // target: 'http://122.51.212.246:5000',//要代理的本地api地址
+        target: 'http://127.0.0.1:5002',
+        changeOrigin: true,//允许跨域
+        // pathRewrite:{"^/api":"/"}//将/api开头替换为/api
+        rewrite:(path) => path.replace(/^\/api/, "")
+      },
+    },
   },
   build:{
     outDir: 'song-web', // 生成输出的根目录。如果该目录存在，则会在生成之前将其删除。 默认文件夹名称为dist

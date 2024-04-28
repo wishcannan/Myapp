@@ -1,7 +1,6 @@
 # Vue 3 + Vite
 
-简单的点歌版 可以在线添加歌曲 删除歌曲
+做的简单点歌版功能 可以添加 删除 有router
 
-
-
+## Recommended IDE Setup
 

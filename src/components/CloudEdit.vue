@@ -54,6 +54,11 @@ const songdata = {
     "songtype":"",
 }
 
+//对话栏 el-dialog
+const dialogVisible = ref(true)
+const buzz =ref(0)
+
+
 
 //函数
 async function getsonglist(){
@@ -66,14 +71,68 @@ async function getsonglist(){
     items = a
     tableData.value = items
 }
-function fuzhi(row,column,event){
-    // console.log(row, event, column)
-    const { toClipboard } = useClipboard();
-    let Msg = '点歌 '+ row.name
-    toClipboard(Msg)
-    ElMessage({
-        message:row.name+' 成功复制到剪贴板',
-        type:'success'
+function insertlist(){
+    let b = {
+        "songname":songdata.songname.value,
+        "songauthor": songdata.songauthor.value,
+        "songlanguage": songdata.songlanguage.value,
+        "bz":songdata.bz.value,
+        "songtype":songdata.songtype,
+    }
+    let a = request({
+        url:'/insertsong',
+        method:'post',
+        data:b
+    }).then((res) => {
+        // console.log(res)
+        if(res.data == 1){
+            ElMessage({
+                message:'添加成功',
+                type:'success'
+            })
+            getsonglist()
+        }else{
+            ElMessage({
+                message:'添加失败',
+                type:'error'
+            })
+        }
+        songdata.songname.value = ''
+        songdata.songauthor.value = ''
+        songdata.bz.value = ''
+    })
+}
+function handleClick(row){
+    console.log('name',row)
+    let b = {
+        "songname":row.name,
+        "songauthor": row.author,
+        "songlanguage": row.language,
+        "bz":row.bz,
+        "songtype":row.songtype,
+    }
+    let a = request({
+        url:'/deletesong',
+        method:'post',
+        data:b
+    }).then((res) => {
+        // console.log(res)
+        if(res.data == 1){
+            ElMessage({
+                message:'删除成功'+row.name,
+                type:'success'
+            })
+            getsonglist()
+            keywords.value = ''
+        }else{
+            ElMessage({
+                message:'删除失败',
+                type:'error'
+            })
+        }
+        songdata.songname.value = ''
+        songdata.songauthor.value = ''
+        songdata.bz.value = ''
     })
 }
 function handleSelect(){
@@ -98,7 +157,13 @@ function randonlookbtn(){
     })
 }
 function routeredit(){
-    router.push('/Edit')
+    router.push('/')
+}
+function handleClose(){
+    // console.log(buzz.value == 16)
+    if(buzz.value == 16){
+        dialogVisible.value = false
+    }
 }
 
 onMounted(() =>{
@@ -109,6 +174,15 @@ onMounted(() =>{
 
 
 <template>
+    <el-dialog v-model="dialogVisible" title="提问:织女星距离牵牛星多少光年" width="30%" :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false">
+        <el-input-number v-model="buzz" size="small" :controls="false"></el-input-number>
+        <template #footer>
+            <span class="dialog-footer">
+              <el-button type="primary" @click="handleClose"
+                >Confirm</el-button>
+            </span>
+        </template>
+    </el-dialog>
     <div class="container">
         <el-row type="flex" justify="center" align="middle">
             <el-col :span="23">
@@ -124,7 +198,29 @@ onMounted(() =>{
         <el-row>
             <el-col :span="24">
                 <p class="p1">擅长的歌 {{tableData.length }}</p>
-                <p class="p2">轻点歌名可以复制</p>
+                <p class="p2">点击删除可就删除了</p>
+            </el-col>
+        </el-row>
+        <el-row class="top1">
+            <el-col :span="6">
+                <el-input placeholder="歌名" v-model="songdata.songname.value" class="searchinput"></el-input>
+            </el-col>
+            <el-col :span="6">
+                <el-input placeholder="歌手" v-model="songdata.songauthor.value"></el-input>
+            </el-col>
+            <el-col :span="6">
+                <el-select v-model="songdata.songlanguage.value" placeholder="请选择">
+                    <el-option v-for="item in languagelist" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-col>
+            <el-col :span="6">
+                <el-input placeholder="备注" v-model="songdata.bz.value"></el-input>
+            </el-col>
+        </el-row>
+        <el-row class="top1">
+            <el-col :span="24">
+                <el-button round="round" title="歌名和歌手不要为空" @click="insertlist" class="insertbutton">添加歌曲</el-button>
             </el-col>
         </el-row>
         <el-row class="top1">
@@ -136,11 +232,15 @@ onMounted(() =>{
             </el-col>
         </el-row>
         <el-row>
-            <el-table :data="tableData" stripe style="width: 100%" @row-click="fuzhi" empty-text="歌单里没有诶~隐藏歌单碰碰运气!">
+            <el-table :data="tableData" stripe style="width: 100%" empty-text="歌单里没有诶~隐藏歌单碰碰运气!">
                 <el-table-column prop="name" label="歌名" align="center"  min-width="40%"/>
                 <el-table-column prop="author" label="歌手" align="center"  min-width="20%"/>
                 <el-table-column prop="language" label="语言" align="center"  min-width="20%"/>
-                <el-table-column prop="bz" label="备注" align="center"  min-width="20%"/>
+                <el-table-column fixed="right" label="删除" align="center"  min-width="20%">
+                    <template #default="dele">
+                        <el-button link type="primary" size="small" @click="handleClick(dele.row)">删除这首</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-row>
         <el-row>
@@ -164,7 +264,6 @@ onMounted(() =>{
     -o-transition:1s;
     animation: spin 2s linear infinite;
 }
-
 
 .p1{
     font-size:70px;
@@ -199,5 +298,8 @@ footer {
 .shenmi{
     width: 20%;
     background-color: burlywood;
+}
+.el-input-number .el-input__inner{
+  text-align: center;
 }
 </style>
