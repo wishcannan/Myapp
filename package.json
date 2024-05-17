@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^1.6.8",
     "element-plus": "^2.7.0",
+    "lb-audio-v3": "^1.0.5",
     "vue": "^3.4.21",
     "vue-clipboard3": "^2.0.0",
     "vue-router": "^4.3.2"

@@ -11,6 +11,9 @@ dependencies:
   element-plus:
     specifier: ^2.7.0
     version: 2.7.0(vue@3.4.21)
+  lb-audio-v3:
+    specifier: ^1.0.5
+    version: 1.0.5
   vue:
     specifier: ^3.4.21
     version: 3.4.21
@@ -694,6 +697,14 @@ packages:
     resolution: {integrity: sha512-goW1b+d9q/HIwbVYZzZ6SsTr4IgE+WA44A0GmPIQstuOrgsFcT7VEJ48nmr9GaRtNu0XTKacFLGnBPAM6Afouw==}
     dependencies:
       delegate: 3.2.0
+    dev: false
+
+  /lb-audio-v3@1.0.5:
+    resolution: {integrity: sha512-c7icd35k0aHnMIVpdjq3tJmfCKLf6evRABXlqfsbL1mxsmOeA6rjWQFUGSP4Zu+sWRtAD1w/4dLqkg731lDM/w==}
+    dependencies:
+      vue: 3.4.21
+    transitivePeerDependencies:
+      - typescript
     dev: false
 
   /lodash-es@4.17.21:
