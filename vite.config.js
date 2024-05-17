@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 
 
 export default defineConfig({
-  base: "./", //等同于  assetsPublicPath :'./'
+  base: "./Myapp/", //等同于  assetsPublicPath :'./'
   plugins: [vue()],
   server:{
     host:'0.0.0.0',//指定服务器 应该监听哪个 IP 地址
@@ -12,8 +12,8 @@ export default defineConfig({
     open: false, // 启动时自动在浏览器中打开应用程序
     proxy: {
       '/api': {
-        // target: 'http://122.51.212.246:5000',//要代理的本地api地址
-        target: 'http://127.0.0.1:5002',
+        target: 'http://122.51.212.246:5000',//要代理的本地api地址
+        // target: 'http://127.0.0.1:5002',
         changeOrigin: true,//允许跨域
         // pathRewrite:{"^/api":"/"}//将/api开头替换为/api
         rewrite:(path) => path.replace(/^\/api/, "")
